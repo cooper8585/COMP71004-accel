@@ -1,0 +1,12 @@
+.build
+.mbed
+projectfiles
+*.py*
+mbed-os
+BUILD
+
+.clangd
+.cache
+compile_commands.json
+ST_INTERFACES
+X_NUCLEO_COMMON
