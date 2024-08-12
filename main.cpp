@@ -1,38 +1,33 @@
-
 #include "mbed.h"
 #include "LSM6DSLSensor.h"
 
-static DevI2C devI2c(PB_11,PB_10);
+#define LSM6DSL_I2C_SDA_PIN PB_9
+#define LSM6DSL_I2C_SCL_PIN PB_8
 
-static LSM6DSLSensor acc_gyro(&devI2c,0xD4,D4,D5); // high address
+I2C i2c(LSM6DSL_I2C_SDA_PIN, LSM6DSL_I2C_SCL_PIN);
 
-/* Simple main function */
+#define LSM6DSL_I2C_ADDRESS 0x6B  
+
+LSM6DSLSensor acc_gyro(&i2c, LSM6DSL_I2C_ADDRESS);
+
+PwmOut led1(PA_5); 
+PwmOut led2(PA_6); 
+PwmOut led3(PA_7); 
+
 int main() {
-    uint8_t id;
     int32_t axes[3];
 
     acc_gyro.init(NULL);
+    acc_gyro.enable_x(); 
 
-    acc_gyro.enable_x();
-    acc_gyro.enable_g();
-
-    printf("This is an accelerometer example running on Mbed OS %d.%d.%d.\n", MBED_MAJOR_VERSION, MBED_MINOR_VERSION, MBED_PATCH_VERSION);
-    printf ("\r\n--- Starting new run ---\r\n\r\n");
-
-    acc_gyro.read_id(&id);
-    printf("LSM6DSL accelerometer & gyroscope = 0x%X\r\n", id);
-
-    printf("\n\r--- Reading sensor values ---\n\r"); ;
-
-    while(1) {
-        printf("\r\n");
-
+    while (true) {
+      
         acc_gyro.get_x_axes(axes);
-        printf("LSM6DSL [acc/mg]:        %6ld, %6ld, %6ld\r\n", axes[0], axes[1], axes[2]);
-
-        acc_gyro.get_g_axes(axes);
-        printf("LSM6DSL [gyro/mdps]:     %6ld, %6ld, %6ld\r\n", axes[0], axes[1], axes[2]);
-        thread_sleep_for(2000);
-
+       
+        led1 = (float)(axes[0] + 4000) / 8000.0f; 
+        led2 = (float)(axes[1] + 4000) / 8000.0f; 
+        led3 = (float)(axes[2] + 4000) / 8000.0f; 
+        
+        wait_us(50000); 
     }
 }
